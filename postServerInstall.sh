@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# Add to any script to prommpt if NOT running as root (sudo)
-# if [[ $EUID -ne 0 ]]; then
-#   echo "This script must be run as root" 1>&2
-#   exit 1
-# fi
-
 # Automatically runs this file as root (sudo)
 if [ "$(id -u)" != "0" ]; then
   exec sudo "$0" "$@"
