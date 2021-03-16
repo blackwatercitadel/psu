@@ -23,7 +23,7 @@ function timezone()
 
 # update and upgrade system
 function update() {
-    apt update && pause && apt full-upgrade -y && pause && apt autoremove -y && pause && apt clean -y && pause && apt autoclean -y
+    apt update && apt full-upgrade -y && apt autoremove -y && apt clean -y && apt autoclean -y
 }
 
 # install net-tools
