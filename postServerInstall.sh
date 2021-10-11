@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # Automatically runs this file as root (sudo)
 if [ "$(id -u)" != "0" ]; then
   exec sudo "$0" "$@"
@@ -10,28 +8,38 @@ function pause() {
     sleep 5
 }
 
-# create an empty cloud-init.disabled file
+# Create an empty cloud-init.disabled file
 function cloud-init() {
     touch /etc/cloud/cloud-init.disabled
 }
 
-# change time
+# Change timezone
 function timezone()
 {
   timedatectl set-timezone America/New_York
 }
 
-# update and upgrade system
+# Disable IPv6
+function disableIPv6() {
+    echo "# The below will disable IPv6" >> /etc/sysctl.conf
+    echo "net.ipv6.conf.all.disable_ipv6=1" >> /etc/sysctl.conf
+    echo "net.ipv6.conf.default.disable_ipv6=1" >> /etc/sysctl.conf
+    echo "net.ipv6.conf.lo.disable_ipv6=1" >> /etc/sysctl.conf
+}
+
+# Update and upgrade system
 function update() {
-    apt update && apt full-upgrade -y && apt autoremove -y && apt clean -y && apt autoclean -y
+    apt update && pause && apt full-upgrade -y && pause && apt autoremove -y && pause && apt clean -y && pause && apt autoclean -y
 }
 
-# install net-tools
-function net-tools() {
-    apt install ifupdown net-tools
+# Install unattended upgrades
+function unattended-upgrades() {
+    apt install unattended-upgrades -y
+    pause
+    echo -e "APT::Periodic::Update-Package-Lists \"1\";\nAPT::Periodic::Unattended-Upgrade \"1\";\n" > /etc/apt/apt.conf.d/20auto-upgrades
 }
 
-# disable UFW
+# Disable UFW
 function ufw-disable() {
     ufw disable && ufw --force reset
 }
@@ -46,11 +54,10 @@ function ufw-allow-outgoing() {
     ufw default allow outgoing
 }
 
-# Allow Incoming SSH from Specific IP Address
-# sudo ufw allow from 192.168.1.1 to any port 22 proto tcp
 # Allow Incoming SSH from Specific IP Subnet (change to match current subnet)
 function ufw-allow-ssh() {
-    ufw allow from 192.168.1.0/24 to any port 22 proto tcp
+   ufw allow from 192.168.1.0/24 to any port 22 proto tcp
+   # ufw allow from 192.168.1.1 to any port 22 proto tcp - allow specific client to connect to SSH
 }
 
 # Enable UFW
@@ -89,13 +96,13 @@ timezone
 pause
 echo ""
 
-echo -e "\e[31;43m***** UPDATING SYSTEM *****\e[0m"
-update
+echo -e "\e[31;43m***** DISABLING IPv6 *****\e[0m"
+disableIPv6
 pause
 echo ""
 
-echo -e "\e[31;43m***** INSTALLING NET-TOOLS *****\e[0m"
-net-tools
+echo -e "\e[31;43m***** UPDATING SYSTEM *****\e[0m"
+update
 pause
 echo ""
 
@@ -140,4 +147,5 @@ pause
 echo ""
 
 echo -e "\e[31;43m***** REBOOTING SYSTEM *****\e[0m"
+pause
 reboot
