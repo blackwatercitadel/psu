@@ -7,7 +7,7 @@ This script will perform some post install tasks in just a few seconds.
 # Usage
 First, download the script and make it executable:
 
-curl -O https://raw.githubusercontent.com/nicholasgraffagnino/psu/main/postServerInstall.sh</br>
+curl -O https://raw.githubusercontent.com/blackwatercitadel/psu/main/postServerInstall.sh</br>
 chmod +x postServerInstall.sh
 
 Then run it:
